@@ -4,9 +4,6 @@ from app import create_app
 app = create_app()
 print(app.url_map)
 
-@app.route('/')
-def home():
-    return "Flask is alive!"
 
 if __name__ == "__main__":
     # Run the app locally on port 5000

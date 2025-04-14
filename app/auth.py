@@ -10,7 +10,7 @@ auth_bp = Blueprint('auth', __name__)
 # Signup Route
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
-    print("✅ /api/auth/signup route HIT")
+    print(" /api/auth/signup route HIT")
 
     # Get data from the request
     data = request.get_json()
