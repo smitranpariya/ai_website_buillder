@@ -2,12 +2,17 @@ from flask import Blueprint, request, jsonify
 import google.generativeai as genai
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import mongo
-import re,json
+import re, json, os
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
 
-# Initialize OpenAI with API key
-client=genai.configure(api_key="AIzaSyBlW-DOiaEULBsd2-a33kFrryQ5qZ9j9l0")
+# Initialize Gemini with API key from .env
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-2.0-flash")
+
+ai_bp = Blueprint("ai", __name__)
 
 # Create Blueprint for AI routes
 ai_bp = Blueprint('ai', __name__)
