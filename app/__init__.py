@@ -4,9 +4,15 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
+from flask_caching import Cache
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+limiter = Limiter(get_remote_address)
 
 # Load environment variables
 load_dotenv()
+cache = Cache()
 
 # Global DB variable (actual database, not client)
 mongo = None
@@ -17,6 +23,12 @@ def create_app():
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+    app.config['CACHE_TYPE'] = 'SimpleCache'  # You can switch to Redis or Memcached in production
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # 5 minutes
+
+    cache.init_app(app)
+    limiter.init_app(app)
 
     CORS(app)
     jwt.init_app(app)

@@ -147,7 +147,7 @@
     }
 
     // Handle Create Website Form Submission
-    document.getElementById("create-website-form").addEventListener("submit", function (e) {
+    document.getElementById("create-website-form").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const business_type = document.getElementById("create-business-type").value.trim();
@@ -158,30 +158,53 @@
         return;
     }
 
-    fetch("http://127.0.0.1:5001/api/ai/generate", {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify({ business_type, industry })
-    })
-    .then(res => res.json())
-    .then(data => {
+    // Disable form and show loader
+    const submitBtn = document.querySelector("#create-website-form button[type='submit']");
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...`;
+
+    try {
+        const response = await fetch("http://127.0.0.1:5001/api/ai/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({ business_type, industry })
+        });
+
+        const data = await response.json();
+
         if (data.msg === "Website generated successfully" || data._id) {
-        alert("Website created!");
-        const modalEl = bootstrap.Modal.getInstance(document.getElementById("createWebsiteModal"));
-        modalEl.hide();
-        location.reload();  // Refresh the table
+            alert("Website created!");
+
+            // Hide modal after alert is dismissed
+            setTimeout(() => {
+                const modalEl = bootstrap.Modal.getInstance(document.getElementById("createWebsiteModal"));
+                modalEl.hide();
+
+                // Refresh table (if you have a loadWebsites() function, call it here)
+                if (typeof loadWebsites === "function") {
+                    loadWebsites();  // Use this if your table is dynamic
+                } else {
+                    location.reload();  // fallback
+                }
+
+                // Reset form
+                document.getElementById("create-website-form").reset();
+            }, 300); // Slight delay for alert acknowledgment
         } else {
-        alert(data.msg || "Something went wrong while creating website.");
+            alert(data.msg || "Something went wrong while creating website.");
         }
-    })
-    .catch(err => {
+    } catch (err) {
         console.error("Create website error:", err);
         alert("Error generating website.");
-    });
-    });
+    } finally {
+        // Re-enable form and reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Create Website";
+    }
+});
 
   
     // Fetch user websites

@@ -7,8 +7,9 @@ This project is a backend for an AI-powered website builder built using **Flask*
 - 🧠 AI-powered content generation via Gemini API
 - 🌐 Website CRUD operations (Create,  Update, Delete)
 - 🗃️ MongoDB for storing user and website data
-- 🧪 API Testing with Postman
 - 📦 Scalable and simple folder structure
+-    Rate limiters for Api
+-    caching
 
 ---
 

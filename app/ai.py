@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 import google.generativeai as genai
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import mongo
+from app import mongo,limiter
 import re, json, os
 from dotenv import load_dotenv
 
@@ -33,6 +33,7 @@ def clean_llm_json(text: str) -> str:
     except json.JSONDecodeError as e:
         raise ValueError(f"Failed to parse JSON from Gemini output: {e}")
 
+@limiter.limit("5 per minute")
 @ai_bp.route('/generate', methods=['POST'])
 @jwt_required()
 def generate_content():
